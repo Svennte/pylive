@@ -80,30 +80,31 @@ class MidiMirror:
                     virtual_output.send(msg)  # Forward physical messages to the DAW
                     print(f"[Virtual Port Output] Forwarded: {msg}")
 
-# Adding callback to duplicate playing clip in Ableton Live
-def duplicate_clip_callback(msg):
-    try:
-        set = live.Set(scan=True)
-        for track in set.tracks:
-            if hasattr(track, 'arm') and track.arm:
-                playing_clip = track.clip_playing
-                if playing_clip:
-                    print(f"Playing Clip Found: {playing_clip} in Track {track.index}")
-                    empty_slot = next((i for i, clip in enumerate(track.clips) if clip is None), None)
-                    if empty_slot is not None:
-                        live.cmd("/live/clip_slot/duplicate_clip_to", (track.index, playing_clip.index, track.index, empty_slot))
-                        print(f"Duplicated clip to slot {empty_slot}.")
-                    else:
-                        print("No empty slot available.")
-                return
-    except live.exceptions.LiveConnectionError as e:
-        print(f"Connection error with Ableton Live: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-
-# Example usage
+## Adding callback to duplicate playing clip in Ableton Live
+#def duplicate_clip_callback(msg):
+#    try:
+#        if msg.type == 'note_on' and msg.note == 107 and msg.velocity == 127:
+#            set = live.Set(scan=True)
+#            for track in set.tracks:
+#                if hasattr(track, 'arm') and track.arm:
+#                    playing_clip = track.clip_playing
+#                    if playing_clip:
+#                        print(f"Playing Clip Found: {playing_clip} in Track {track.index}")
+#                        empty_slot = next((i for i, clip in enumerate(track.clips) if clip is None), None)
+#                        if empty_slot is not None:
+#                            live.cmd("/live/clip_slot/duplicate_clip_to", (track.index, playing_clip.index, track.index, empty_slot))
+#                            print(f"Duplicated clip to slot {empty_slot}.")
+#                        else:
+#                            print("No empty slot available.")
+#                    return
+#    except live.exceptions.LiveConnectionError as e:
+#        print(f"Connection error with Ableton Live: {e}")
+#    except Exception as e:
+#        print(f"Unexpected error: {e}")
+#
+## Example usage
 #midi_mirror = MidiMirror(physicalMidi='Launchpad MK2', virtualOutputFromDAW='Launchpad_VIn', virtualInputToDAW='Launchpad_VOut')
 #midi_mirror.addCallback(107, duplicate_clip_callback)  # Trigger duplication on MIDI note 107
 
 # Uncomment the line below to start the mirror process
-# midi_mirror.StartMirrorMidi()
+#midi_mirror.StartMirrorMidi()
